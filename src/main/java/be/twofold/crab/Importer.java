@@ -95,7 +95,7 @@ public final class Importer {
                     recordToStmt(record, stmt, header);
                     stmt.addBatch();
 
-                    if (index++ % 100_000 == 0) {
+                    if (++index % 100_000 == 0) {
                         commit(connection, stmt, index);
                     }
                 }
