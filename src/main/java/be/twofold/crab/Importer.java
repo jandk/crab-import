@@ -88,19 +88,22 @@ public final class Importer {
             DbfHeader header = reader.getHeader();
             String sql = insertSql(header, nameWithoutExtension(path.getFileName()));
 
+            ProgressMonitor monitor = new ProgressMonitor();
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                int index = 0;
                 while (reader.hasNext()) {
                     DbfRecord record = reader.next();
                     recordToStmt(record, stmt, header);
-                    stmt.addBatch();
 
-                    if (++index % 100_000 == 0) {
-                        commit(connection, stmt, index);
+                    stmt.addBatch();
+                    int count = monitor.incrementCount();
+                    if ((count % 1024) == 0) {
+                        commit(stmt);
                     }
                 }
-                commit(connection, stmt, header.getNumberOfRecords());
+                monitor.print();
+                commit(stmt);
             }
+
         }
         System.out.println("-".repeat(50));
     }
@@ -152,10 +155,9 @@ public final class Importer {
         }
     }
 
-    private void commit(Connection connection, PreparedStatement statement, int numberOfRecords) throws SQLException {
+    private void commit(PreparedStatement statement) throws SQLException {
         statement.executeBatch();
         connection.commit();
-        System.out.println("Imported " + numberOfRecords + " records");
     }
 
     // endregion
