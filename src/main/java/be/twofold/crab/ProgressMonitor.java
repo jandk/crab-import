@@ -1,8 +1,10 @@
 package be.twofold.crab;
 
+import java.util.concurrent.*;
+
 final class ProgressMonitor {
 
-    private static final long TimeoutNanos = 1_000_000_000;
+    private static final long TimeoutNanos = TimeUnit.SECONDS.toNanos(1);
 
     private long lastUpdate;
     private int lastCount;

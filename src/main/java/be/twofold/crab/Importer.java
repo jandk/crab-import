@@ -1,26 +1,14 @@
 package be.twofold.crab;
 
-import be.twofold.tinydbf.DbfField;
-import be.twofold.tinydbf.DbfHeader;
-import be.twofold.tinydbf.DbfReader;
-import be.twofold.tinydbf.DbfRecord;
-import be.twofold.tinydbf.DbfType;
-import be.twofold.tinydbf.DbfValue;
+import be.twofold.tinydbf.*;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Connection;
+import java.io.*;
+import java.math.*;
+import java.nio.file.*;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.*;
 
 public final class Importer {
 
