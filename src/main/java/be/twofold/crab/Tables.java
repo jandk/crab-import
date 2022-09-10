@@ -15,7 +15,7 @@ final class Tables {
 
     static final List<Column> Metadata = List.of(
         Column.fixed("BEGINDATUM", Types.DATE),
-        Column.fixed("EINDDATUM", Types.DATE),
+        Column.fixed("EINDDATUM", Types.DATE).withNulls(),
         Column.variable("BEGINTIJD", Types.VARCHAR, 15),
         Column.fixed("BEGINBEW", Types.SMALLINT),
         Column.fixed("BEGINORG", Types.SMALLINT)
@@ -24,7 +24,7 @@ final class Tables {
     static final Table Gemeente = new Table("GEM", List.of(
         Column.fixed("NISGEMCODE", Types.INTEGER),
         Column.variable("TAALCODE", Types.VARCHAR, 2),
-        Column.variable("TAALCODE2", Types.VARCHAR, 2)
+        Column.variable("TAALCODE2", Types.VARCHAR, 2).withNulls()
     ));
 
     static final Table GemeenteNaam = new Table("GEMNM", List.of(
@@ -78,8 +78,8 @@ final class Tables {
         Column.fixed("NISGEMCODE", Types.INTEGER),
         Column.variable("STRAATNM", Types.VARCHAR, 80),
         Column.variable("TAALCODE", Types.VARCHAR, 2),
-        Column.variable("STRAATNM2", Types.VARCHAR, 80),
-        Column.variable("TAALCODE2", Types.VARCHAR, 2),
+        Column.variable("STRAATNM2", Types.VARCHAR, 80).withNulls(),
+        Column.variable("TAALCODE2", Types.VARCHAR, 2).withNulls(),
         Column.variable("STRAATNM0", Types.VARCHAR, 80)
     ));
 
@@ -88,15 +88,15 @@ final class Tables {
         Column.fixed("WEGOBJID", Types.INTEGER),
         Column.fixed("KANT", Types.SMALLINT),
         Column.fixed("BEGINPOS", Types.FLOAT),
-        Column.fixed("EINDPOS", Types.FLOAT),
-        Column.fixed("PARITEIT", Types.SMALLINT),
-        Column.variable("EERSTEHNR", Types.VARCHAR, 20),
-        Column.variable("LAATSTEHNR", Types.VARCHAR, 20)
+        Column.fixed("EINDPOS", Types.FLOAT).withNulls(),
+        Column.fixed("PARITEIT", Types.SMALLINT).withNulls(),
+        Column.variable("EERSTEHNR", Types.VARCHAR, 20).withNulls(),
+        Column.variable("LAATSTEHNR", Types.VARCHAR, 20).withNulls()
     ));
 
     static final Table SubAdres = new Table("SUBADRES", List.of(
         Column.fixed("HUISNRID", Types.INTEGER),
-        Column.variable("SUBADR", Types.VARCHAR, 35),
+        Column.variable("SUBADR", Types.VARCHAR, 35).withNulls(),
         Column.fixed("AARD", Types.SMALLINT)
     ));
 
@@ -124,9 +124,9 @@ final class Tables {
     static final Table TerreinObject = new Table("TERROBJ", List.of(
         Column.variable("OBJID", Types.VARCHAR, 21),
         Column.fixed("AARD", Types.SMALLINT),
-        Column.fixed("X", Types.FLOAT),
-        Column.fixed("Y", Types.FLOAT),
-        Column.fixed("KADGEMCODE", Types.INTEGER)
+        Column.fixed("X", Types.FLOAT).withNulls(),
+        Column.fixed("Y", Types.FLOAT).withNulls(),
+        Column.fixed("KADGEMCODE", Types.INTEGER).withNulls()
     ));
 
     static final Table TerreinObjectHuisNummer = new Table("TOBJHNR", List.of(
