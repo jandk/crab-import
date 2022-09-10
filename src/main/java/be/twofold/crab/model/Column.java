@@ -26,6 +26,7 @@ public record Column(String name, int sqlType, Integer length, boolean nullable)
             case Types.FLOAT -> "real";
             case Types.INTEGER -> "int";
             case Types.SMALLINT -> "smallint";
+            case Types.TIMESTAMP -> "timestamp";
             case Types.VARCHAR -> "varchar(" + length + ")";
             default -> throw new IllegalStateException("Unexpected type: " + sqlType);
         } + (nullable ? " null" : " not null");

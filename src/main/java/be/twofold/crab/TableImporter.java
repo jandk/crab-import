@@ -8,10 +8,13 @@ import java.io.*;
 import java.nio.file.*;
 import java.sql.Date;
 import java.sql.*;
+import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 
 public final class TableImporter {
+
+    private static final ZoneId BRUSSELS = ZoneId.of("Europe/Brussels");
 
     private final Connection connection;
     private final boolean withMetadata;
@@ -75,9 +78,10 @@ public final class TableImporter {
         Map<String, Mapper> mappers = new HashMap<>();
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
-            Mapper mapper = mapper(i + 1, column.sqlType());
+            int parameterIndex = i + 1;
+            Mapper mapper = mapper(parameterIndex, column.sqlType());
             if (column.nullable()) {
-                mapper = nullSafe(mapper, i + i, column.sqlType());
+                mapper = nullSafe(mapper, parameterIndex, column.sqlType());
             }
             mappers.put(column.name(), mapper);
         }
@@ -90,9 +94,26 @@ public final class TableImporter {
             case Types.FLOAT -> (stmt, value) -> stmt.setFloat(index, value.asNumeric().floatValue());
             case Types.INTEGER -> (stmt, value) -> stmt.setInt(index, value.asNumeric().intValue());
             case Types.SMALLINT -> (stmt, value) -> stmt.setShort(index, value.asNumeric().shortValue());
+            case Types.TIMESTAMP -> (stmt, value) -> stmt.setTimestamp(index, parseTimestamp(value.asCharacter()));
             case Types.VARCHAR -> (stmt, value) -> stmt.setString(index, value.asCharacter());
             default -> throw new IllegalStateException("Unexpected type: " + sqlType);
         };
+    }
+
+    private Timestamp parseTimestamp(String s) {
+        int year = Integer.parseInt(s, 0, 4, 10);
+        int month = Integer.parseInt(s, 4, 6, 10);
+        int dayOfMonth = Integer.parseInt(s, 6, 8, 10);
+        int hour = Integer.parseInt(s, 9, 11, 10);
+        int minute = Integer.parseInt(s, 11, 13, 10);
+        int second = Integer.parseInt(s, 13, 15, 10);
+        LocalDateTime instant = LocalDateTime
+            .of(year, month, dayOfMonth, hour, minute, second)
+            .atZone(BRUSSELS)
+            .withZoneSameInstant(ZoneOffset.UTC)
+            .toLocalDateTime();
+
+        return Timestamp.valueOf(instant);
     }
 
     private Mapper nullSafe(Mapper mapper, int index, int sqlType) {

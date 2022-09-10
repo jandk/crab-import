@@ -16,7 +16,7 @@ final class Tables {
     static final List<Column> Metadata = List.of(
         Column.fixed("BEGINDATUM", Types.DATE),
         Column.fixed("EINDDATUM", Types.DATE).withNulls(),
-        Column.variable("BEGINTIJD", Types.VARCHAR, 15),
+        Column.fixed("BEGINTIJD", Types.TIMESTAMP),
         Column.fixed("BEGINBEW", Types.SMALLINT),
         Column.fixed("BEGINORG", Types.SMALLINT)
     );
