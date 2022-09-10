@@ -1,8 +1,8 @@
-package be.twofold.crab;
+package be.twofold.crab.utils;
 
 import java.util.concurrent.*;
 
-final class ProgressMonitor {
+public final class ProgressMonitor {
 
     private static final long TimeoutNanos = TimeUnit.SECONDS.toNanos(1);
 
@@ -10,7 +10,7 @@ final class ProgressMonitor {
     private int lastCount;
     private int count;
 
-    ProgressMonitor() {
+    public ProgressMonitor() {
         initialize();
     }
 
@@ -18,7 +18,7 @@ final class ProgressMonitor {
         lastUpdate = System.nanoTime();
     }
 
-    int incrementCount() {
+    public int incrementCount() {
         count++;
         long nanoTime = System.nanoTime();
         if (nanoTime - lastUpdate >= TimeoutNanos) {
@@ -29,7 +29,7 @@ final class ProgressMonitor {
         return count;
     }
 
-    void print() {
+    public void print() {
         System.out.println("Saved " + count + " items (" + (count - lastCount) + " items/s)");
     }
 

@@ -1,5 +1,6 @@
 package be.twofold.crab;
 
+import be.twofold.crab.utils.*;
 import be.twofold.tinydbf.*;
 
 import java.io.*;
