@@ -39,8 +39,8 @@ public final class TableImporter {
                 while (reader.hasNext()) {
                     DbfRecord record = reader.next();
                     for (Column column : columns) {
-                        Mapper mapper = mappers.get(column.name());
-                        mapper.set(stmt, record.get(column.name()));
+                        Mapper mapper = mappers.get(column.getName());
+                        mapper.set(stmt, record.get(column.getName()));
                     }
 
                     stmt.addBatch();
@@ -79,25 +79,32 @@ public final class TableImporter {
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
             int parameterIndex = i + 1;
-            Mapper mapper = mapper(parameterIndex, column.sqlType());
-            if (column.nullable()) {
-                mapper = nullSafe(mapper, parameterIndex, column.sqlType());
+            Mapper mapper = mapper(parameterIndex, column.getSqlType());
+            if (column.isNullable()) {
+                mapper = nullSafe(mapper, parameterIndex, column.getSqlType());
             }
-            mappers.put(column.name(), mapper);
+            mappers.put(column.getName(), mapper);
         }
         return Map.copyOf(mappers);
     }
 
     private Mapper mapper(int index, int sqlType) {
-        return switch (sqlType) {
-            case Types.DATE -> (stmt, value) -> stmt.setDate(index, Date.valueOf(value.asDate()));
-            case Types.FLOAT -> (stmt, value) -> stmt.setFloat(index, value.asNumeric().floatValue());
-            case Types.INTEGER -> (stmt, value) -> stmt.setInt(index, value.asNumeric().intValue());
-            case Types.SMALLINT -> (stmt, value) -> stmt.setShort(index, value.asNumeric().shortValue());
-            case Types.TIMESTAMP -> (stmt, value) -> stmt.setTimestamp(index, parseTimestamp(value.asCharacter()));
-            case Types.VARCHAR -> (stmt, value) -> stmt.setString(index, value.asCharacter());
-            default -> throw new IllegalStateException("Unexpected type: " + sqlType);
-        };
+        switch (sqlType) {
+            case Types.DATE:
+                return (stmt, value) -> stmt.setDate(index, Date.valueOf(value.asDate()));
+            case Types.FLOAT:
+                return (stmt, value) -> stmt.setFloat(index, value.asNumeric().floatValue());
+            case Types.INTEGER:
+                return (stmt, value) -> stmt.setInt(index, value.asNumeric().intValue());
+            case Types.SMALLINT:
+                return (stmt, value) -> stmt.setShort(index, value.asNumeric().shortValue());
+            case Types.TIMESTAMP:
+                return (stmt, value) -> stmt.setTimestamp(index, parseTimestamp(value.asCharacter()));
+            case Types.VARCHAR:
+                return (stmt, value) -> stmt.setString(index, value.asCharacter());
+            default:
+                throw new IllegalStateException("Unexpected type: " + sqlType);
+        }
     }
 
     private Timestamp parseTimestamp(String s) {

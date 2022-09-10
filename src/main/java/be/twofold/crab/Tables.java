@@ -165,7 +165,7 @@ final class Tables {
     static List<Column> getColumnsFor(String tableName, boolean metadata) {
         List<Column> columns = new ArrayList<>();
         columns.add(Id);
-        columns.addAll(Tables.get(tableName).columns());
+        columns.addAll(Tables.get(tableName).getColumns());
         if (metadata) {
             columns.addAll(Metadata);
         }
