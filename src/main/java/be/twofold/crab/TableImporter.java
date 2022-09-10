@@ -11,7 +11,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.*;
 
-public final class Importer {
+public final class TableImporter {
 
     private static final Set<String> MetadataColumns = Set.of(
         "BEGINDATUM",
@@ -23,58 +23,9 @@ public final class Importer {
 
     private final Connection connection;
 
-    public Importer(Connection connection) {
+    public TableImporter(Connection connection) {
         this.connection = Objects.requireNonNull(connection);
     }
-
-    // region Create table
-
-    void createTable(Path path) throws IOException, SQLException {
-        System.out.println("Create " + path);
-
-        DbfHeader header = readHeader(path);
-        String sql = createSql(header, nameWithoutExtension(path.getFileName()));
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(sql);
-        }
-    }
-
-    private DbfHeader readHeader(Path path) throws IOException {
-        try (DbfReader reader = new DbfReader(Files.newInputStream(path))) {
-            return reader.getHeader();
-        }
-    }
-
-    private String createSql(DbfHeader header, String fileName) {
-        String columns = StreamSupport.stream(header.spliterator(), false)
-            .filter(f -> !MetadataColumns.contains(f.getName()))
-            .map(f -> f.getName() + " " + getType(f))
-            .collect(Collectors.joining(", "));
-
-        return "create table if not exists " + fileName + " (" + columns + ")";
-    }
-
-    private String getType(DbfField field) {
-        switch (field.getType()) {
-            case Char:
-                return "varchar(" + field.getLength() + ")";
-            case Date:
-                return "date";
-            case Floating:
-                return "real";
-            case Logical:
-                return "boolean";
-            case Numeric:
-                String decimalCount = field.getDecimalCount() > 0 ? "," + field.getDecimalCount() : "";
-                return ("decimal(" + field.getLength()) + decimalCount + ")";
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
-    // endregion
-
-    // region Import data
 
     void importFile(Path path) throws IOException, SQLException {
         System.out.println("Importing " + path);
@@ -105,8 +56,8 @@ public final class Importer {
 
     private String insertSql(DbfHeader header, String filename) {
         String parameters = StreamSupport.stream(header.spliterator(), false)
-            .filter(f -> !MetadataColumns.contains(f.getName()))
             .map(DbfField::getName)
+            .filter(name -> !MetadataColumns.contains(name))
             .collect(Collectors.joining(", "));
 
         String values = StreamSupport.stream(header.spliterator(), false)
@@ -139,28 +90,19 @@ public final class Importer {
     }
 
     private int getSqlType(DbfType type) {
-        switch (type) {
-            case Char:
-                return Types.VARCHAR;
-            case Date:
-                return Types.DATE;
-            case Floating:
-                return Types.FLOAT;
-            case Logical:
-                return Types.BOOLEAN;
-            case Numeric:
-                return Types.DECIMAL;
-            default:
-                throw new IllegalArgumentException();
-        }
+        return switch (type) {
+            case Char -> Types.VARCHAR;
+            case Date -> Types.DATE;
+            case Floating -> Types.FLOAT;
+            case Logical -> Types.BOOLEAN;
+            case Numeric -> Types.DECIMAL;
+        };
     }
 
     private void commit(PreparedStatement statement) throws SQLException {
         statement.executeBatch();
         connection.commit();
     }
-
-    // endregion
 
     private String nameWithoutExtension(Path path) {
         Path fileName = path.getFileName();
