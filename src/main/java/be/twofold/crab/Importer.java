@@ -12,6 +12,14 @@ import java.util.stream.*;
 
 public final class Importer {
 
+    private static final Set<String> MetadataColumns = Set.of(
+        "BEGINDATUM",
+        "EINDDATUM",
+        "BEGINTIJD",
+        "BEGINORG",
+        "BEGINBEW"
+    );
+
     private final Connection connection;
 
     public Importer(Connection connection) {
@@ -37,11 +45,9 @@ public final class Importer {
     }
 
     private String createSql(DbfHeader header, String fileName) {
-        String columns = IntStream.range(0, header.getFieldCount())
-            .mapToObj(i -> {
-                DbfField field = header.getField(i);
-                return field.getName() + " " + getType(field);
-            })
+        String columns = StreamSupport.stream(header.spliterator(), false)
+            .filter(f -> !MetadataColumns.contains(f.getName()))
+            .map(f -> f.getName() + " " + getType(f))
             .collect(Collectors.joining(", "));
 
         return "create table if not exists " + fileName + " (" + columns + ")";
@@ -98,30 +104,35 @@ public final class Importer {
 
     private String insertSql(DbfHeader header, String filename) {
         String parameters = StreamSupport.stream(header.spliterator(), false)
+            .filter(f -> !MetadataColumns.contains(f.getName()))
             .map(DbfField::getName)
             .collect(Collectors.joining(", "));
 
-        String values = IntStream.range(0, header.getFieldCount())
-            .mapToObj(__ -> "?")
+        String values = StreamSupport.stream(header.spliterator(), false)
+            .filter(f -> !MetadataColumns.contains(f.getName()))
+            .map(__ -> "?")
             .collect(Collectors.joining(", "));
 
         return "insert into " + filename + " (" + parameters + ") values (" + values + ");";
     }
 
     private void recordToStmt(DbfRecord record, PreparedStatement statement, DbfHeader header) throws SQLException {
-        for (int i = 0; i < record.size(); i++) {
-            DbfValue value = record.get(i);
-            int parameterIndex = i + 1;
+        int parameterIndex = 1;
+        for (DbfField field : header) {
+            if (MetadataColumns.contains(field.getName())) {
+                continue;
+            }
+            DbfValue value = record.get(field.getName());
             if (value.isCharacter()) {
-                statement.setString(parameterIndex, value.asCharacter());
+                statement.setString(parameterIndex++, value.asCharacter());
             } else if (value.isDate()) {
-                statement.setDate(parameterIndex, Date.valueOf(value.asDate()));
+                statement.setDate(parameterIndex++, Date.valueOf(value.asDate()));
             } else if (value.isLogical()) {
-                statement.setBoolean(parameterIndex, value.asLogical());
+                statement.setBoolean(parameterIndex++, value.asLogical());
             } else if (value.isNull()) {
-                statement.setNull(parameterIndex, getSqlType(header.getField(i).getType()));
+                statement.setNull(parameterIndex++, getSqlType(field.getType()));
             } else if (value.isNumeric()) {
-                statement.setBigDecimal(parameterIndex, new BigDecimal(value.asNumeric().toString()));
+                statement.setBigDecimal(parameterIndex++, new BigDecimal(value.asNumeric().toString()));
             }
         }
     }
