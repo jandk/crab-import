@@ -24,16 +24,16 @@ public final class TableImporter {
         this.withMetadata = withMetadata;
     }
 
-    void importFile(Path path, String tableName) throws IOException, SQLException {
+    void importFile(Path path, String filename) throws IOException, SQLException {
         System.out.println("Importing " + path);
 
-        List<Column> columns = Tables.getColumnsFor(tableName, withMetadata);
+        List<Column> columns = Tables.getColumnsFor(filename, withMetadata);
         Map<String, Mapper> mappers = createMappers(columns);
 
         ProgressMonitor monitor = new ProgressMonitor();
 
         try (DbfReader reader = new DbfReader(Files.newInputStream(path))) {
-            String sql = insertSql(tableName);
+            String sql = insertSql(filename);
 
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 while (reader.hasNext()) {
@@ -57,12 +57,14 @@ public final class TableImporter {
         System.out.println("-".repeat(50));
     }
 
-    private String insertSql(String tableName) {
-        String parameters = Tables.getColumnsFor(tableName, withMetadata).stream()
+    private String insertSql(String filename) {
+        String tableName = Tables.getPgName(filename);
+        List<Column> columns = Tables.getColumnsFor(filename, withMetadata);
+        String parameters = columns.stream()
             .map(Column::getPgName)
             .collect(Collectors.joining(", "));
 
-        String values = Tables.getColumnsFor(tableName, withMetadata).stream()
+        String values = columns.stream()
             .map(__ -> "?")
             .collect(Collectors.joining(", "));
 

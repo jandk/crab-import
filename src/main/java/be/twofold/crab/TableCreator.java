@@ -15,17 +15,18 @@ public final class TableCreator {
         this.withMetadata = withMetadata;
     }
 
-    void createTable(Path path, String tableName) throws SQLException {
+    void createTable(Path path, String filename) throws SQLException {
         System.out.println("Create " + path);
 
-        String sql = createSql(tableName);
+        String sql = createSql(filename);
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
         }
     }
 
-    private String createSql(String tableName) {
-        String columns = Tables.getColumnsFor(tableName, withMetadata).stream()
+    private String createSql(String filename) {
+        String tableName = Tables.getPgName(filename);
+        String columns = Tables.getColumnsFor(filename, withMetadata).stream()
             .map(c -> c.getPgName() + " " + c.getTypeString())
             .collect(Collectors.joining(", "));
 

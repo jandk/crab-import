@@ -2,7 +2,7 @@ package be.twofold.crab.model;
 
 import java.util.*;
 
-public final class Table {
+public final class Table implements Named {
 
     private final String name;
     private final List<Column> columns;
@@ -12,6 +12,7 @@ public final class Table {
         this.columns = List.copyOf(columns);
     }
 
+    @Override
     public String getName() {
         return name;
     }

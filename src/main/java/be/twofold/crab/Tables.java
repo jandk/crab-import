@@ -11,9 +11,9 @@ final class Tables {
         throw new UnsupportedOperationException();
     }
 
-    static final Column Id = Column.fixed("ID", Types.INTEGER);
+    private static final Column Id = Column.fixed("ID", Types.INTEGER);
 
-    static final List<Column> Metadata = List.of(
+    private static final List<Column> Metadata = List.of(
         Column.fixed("BEGINDATUM", Types.DATE),
         Column.fixed("EINDDATUM", Types.DATE).withNulls(),
         Column.fixed("BEGINTIJD", Types.TIMESTAMP),
@@ -21,60 +21,60 @@ final class Tables {
         Column.fixed("BEGINORG", Types.SMALLINT)
     );
 
-    static final Table Gemeente = new Table("GEM", List.of(
+    private static final Table Gemeente = new Table("Gemeente", List.of(
         Column.fixed("NISGEMCODE", Types.INTEGER),
         Column.variable("TAALCODE", Types.VARCHAR, 2),
         Column.variable("TAALCODE2", Types.VARCHAR, 2).withNulls()
     ));
 
-    static final Table GemeenteNaam = new Table("GEMNM", List.of(
+    private static final Table GemeenteNaam = new Table("GemeenteNaam", List.of(
         Column.fixed("GEMID", Types.INTEGER),
         Column.variable("GEMNM", Types.VARCHAR, 40),
         Column.variable("TAALCODE", Types.VARCHAR, 2)
     ));
 
-    static final Table HuisNummer = new Table("HUISNR", List.of(
+    private static final Table HuisNummer = new Table("HuisNummer", List.of(
         Column.fixed("STRAATNMID", Types.INTEGER),
         Column.variable("HUISNR", Types.VARCHAR, 11),
         Column.variable("HUISNRID0", Types.VARCHAR, 37)
     ));
 
-    static final Table KadGemeente = new Table("KADGEM", List.of(
+    private static final Table KadGemeente = new Table("KadGemeente", List.of(
         Column.fixed("KADGEMCODE", Types.INTEGER)
     ));
 
-    static final Table KadGemeenteGemeente = new Table("KADGGEM", List.of(
+    private static final Table KadGemeenteGemeente = new Table("KadGemeenteGemeente", List.of(
         Column.fixed("KADGEMID", Types.INTEGER),
         Column.fixed("GEMID", Types.INTEGER)
     ));
 
-    static final Table KadGemeenteNaam = new Table("KADGNM", List.of(
+    private static final Table KadGemeenteNaam = new Table("KadGemeenteNaam", List.of(
         Column.fixed("KADGEMID", Types.INTEGER),
         Column.variable("KADGEMNM", Types.VARCHAR, 80),
         Column.variable("TAALCODE", Types.VARCHAR, 2)
     ));
 
-    static final Table PostKantonCode = new Table("PKANCODE", List.of(
+    private static final Table PostKantonCode = new Table("PostKantonCode", List.of(
         Column.fixed("HUISNRID", Types.INTEGER),
         Column.fixed("PKANCODE", Types.SMALLINT)
     ));
 
-    static final Table PostKanton = new Table("POSTKAN", List.of(
+    private static final Table PostKanton = new Table("PostKanton", List.of(
         Column.fixed("PKANCODE", Types.SMALLINT)
     ));
 
-    static final Table PostKantonNaam = new Table("POSTKNM", List.of(
+    private static final Table PostKantonNaam = new Table("PostKantonNaam", List.of(
         Column.fixed("POSTKANID", Types.INTEGER),
         Column.variable("POSTKANNM", Types.VARCHAR, 254),
         Column.variable("TAALCODE", Types.VARCHAR, 2)
     ));
 
-    static final Table SubStraatStraatNaam = new Table("SSTRSTRN", List.of(
+    private static final Table SubStraatStraatNaam = new Table("SubStraatStraatNaam", List.of(
         Column.fixed("SUBSTRID", Types.INTEGER),
         Column.fixed("STRAATNMID", Types.INTEGER)
     ));
 
-    static final Table StraatNaam = new Table("STRAATNM", List.of(
+    private static final Table StraatNaam = new Table("StraatNaam", List.of(
         Column.fixed("NISGEMCODE", Types.INTEGER),
         Column.variable("STRAATNM", Types.VARCHAR, 80),
         Column.variable("TAALCODE", Types.VARCHAR, 2),
@@ -83,7 +83,7 @@ final class Tables {
         Column.variable("STRAATNM0", Types.VARCHAR, 80)
     ));
 
-    static final Table StraatKant = new Table("STRKANT", List.of(
+    private static final Table StraatKant = new Table("StraatKant", List.of(
         Column.fixed("STRAATNMID", Types.INTEGER),
         Column.fixed("WEGOBJID", Types.INTEGER),
         Column.fixed("KANT", Types.SMALLINT),
@@ -94,34 +94,34 @@ final class Tables {
         Column.variable("LAATSTEHNR", Types.VARCHAR, 20).withNulls()
     ));
 
-    static final Table SubAdres = new Table("SUBADRES", List.of(
+    private static final Table SubAdres = new Table("SubAdres", List.of(
         Column.fixed("HUISNRID", Types.INTEGER),
         Column.variable("SUBADR", Types.VARCHAR, 35).withNulls(),
         Column.fixed("AARD", Types.SMALLINT)
     ));
 
-    static final Table SubKanton = new Table("SUBKAN", List.of(
+    private static final Table SubKanton = new Table("SubKanton", List.of(
         Column.fixed("POSTKANID", Types.INTEGER),
         Column.fixed("SUBKANNR", Types.SMALLINT)
     ));
 
-    static final Table SubKantonGemeente = new Table("SUBKGEM", List.of(
+    private static final Table SubKantonGemeente = new Table("SubKantonGemeente", List.of(
         Column.fixed("SUBKANID", Types.INTEGER),
         Column.fixed("GEMID", Types.INTEGER)
     ));
 
-    static final Table SubStraat = new Table("SUBSTR", List.of(
+    private static final Table SubStraat = new Table("SubStraat", List.of(
         Column.variable("STRAATCODE", Types.VARCHAR, 4),
         Column.fixed("SUBKANCODE", Types.SMALLINT)
     ));
 
-    static final Table SubStraatNaam = new Table("SUBSTRNM", List.of(
+    private static final Table SubStraatNaam = new Table("SubStraatNaam", List.of(
         Column.fixed("SUBSTRID", Types.INTEGER),
         Column.variable("SUBSTRNM", Types.VARCHAR, 80),
         Column.variable("TAALCODE", Types.VARCHAR, 2)
     ));
 
-    static final Table TerreinObject = new Table("TERROBJ", List.of(
+    private static final Table TerreinObject = new Table("TerreinObject", List.of(
         Column.variable("OBJID", Types.VARCHAR, 21),
         Column.fixed("AARD", Types.SMALLINT),
         Column.fixed("X", Types.FLOAT).withNulls(),
@@ -129,17 +129,17 @@ final class Tables {
         Column.fixed("KADGEMCODE", Types.INTEGER).withNulls()
     ));
 
-    static final Table TerreinObjectHuisNummer = new Table("TOBJHNR", List.of(
+    private static final Table TerreinObjectHuisNummer = new Table("TerreinObjectHuisNummer", List.of(
         Column.fixed("TERROBJID", Types.INTEGER),
         Column.fixed("HUISNRID", Types.INTEGER)
     ));
 
-    static final Table WegObject = new Table("WEGOBJ", List.of(
+    private static final Table WegObject = new Table("WegObject", List.of(
         Column.variable("OBJID", Types.VARCHAR, 21),
         Column.fixed("AARD", Types.SMALLINT)
     ));
 
-    static final Map<String, Table> Tables = Map.ofEntries(
+    private static final Map<String, Table> Tables = Map.ofEntries(
         Map.entry("gem", Gemeente),
         Map.entry("gemnm", GemeenteNaam),
         Map.entry("huisnr", HuisNummer),
@@ -161,6 +161,10 @@ final class Tables {
         Map.entry("tobjhnr", TerreinObjectHuisNummer),
         Map.entry("wegobj", WegObject)
     );
+
+    static String getPgName(String tableName) {
+        return Tables.get(tableName).getPgName();
+    }
 
     static List<Column> getColumnsFor(String tableName, boolean metadata) {
         List<Column> columns = new ArrayList<>();
