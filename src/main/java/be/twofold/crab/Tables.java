@@ -11,7 +11,7 @@ final class Tables {
         throw new UnsupportedOperationException();
     }
 
-    static final Column Id = Column.fixed("Id", Types.INTEGER);
+    static final Column Id = Column.fixed("ID", Types.INTEGER);
 
     static final List<Column> Metadata = List.of(
         Column.fixed("BEGINDATUM", Types.DATE),

@@ -51,8 +51,8 @@ public final class Column implements Named {
             case Types.INTEGER -> "int";
             case Types.SMALLINT -> "smallint";
             case Types.VARCHAR -> "varchar(" + length + ")";
-            default -> throw new IllegalArgumentException("Unexpected type: " + sqlType);
-        };
+            default -> throw new IllegalStateException("Unexpected type: " + sqlType);
+        } + (nullable ? " null" : " not null");
     }
 
     @Override

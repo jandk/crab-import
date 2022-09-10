@@ -19,14 +19,15 @@ public final class Main {
 
     private static void importFiles(List<Path> filePaths) throws SQLException, IOException {
         try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/crab?reWriteBatchedInserts=true", "crab", "crab")) {
-            conn.setAutoCommit(false);
             TableCreator creator = new TableCreator(conn, false);
-            TableImporter importer = new TableImporter(conn);
             for (Path filePath : filePaths) {
                 creator.createTable(filePath, tableName(filePath));
             }
+
+            conn.setAutoCommit(false);
+            TableImporter importer = new TableImporter(conn, false);
             for (Path filePath : filePaths) {
-                importer.importFile(filePath);
+                importer.importFile(filePath, tableName(filePath));
             }
         }
     }

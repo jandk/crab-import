@@ -21,7 +21,6 @@ public final class TableCreator {
         String sql = createSql(tableName);
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
-            connection.commit();
         }
     }
 
