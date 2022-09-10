@@ -7,10 +7,10 @@ public interface Named {
 
     Pattern CAMEL_CASE = Pattern.compile("([a-z])([A-Z])");
 
-    String getName();
+    String name();
 
     default String getPgName() {
-        return CAMEL_CASE.matcher(getName())
+        return CAMEL_CASE.matcher(name())
             .replaceAll("$1_$2")
             .toLowerCase(Locale.ROOT);
     }

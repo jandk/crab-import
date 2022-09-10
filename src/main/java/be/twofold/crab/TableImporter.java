@@ -36,8 +36,8 @@ public final class TableImporter {
                 while (reader.hasNext()) {
                     DbfRecord record = reader.next();
                     for (Column column : columns) {
-                        Mapper mapper = mappers.get(column.getName());
-                        mapper.set(stmt, record.get(column.getName()));
+                        Mapper mapper = mappers.get(column.name());
+                        mapper.set(stmt, record.get(column.name()));
                     }
 
                     stmt.addBatch();
@@ -75,11 +75,11 @@ public final class TableImporter {
         Map<String, Mapper> mappers = new HashMap<>();
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
-            Mapper mapper = mapper(i + 1, column.getSqlType());
-            if (column.isNullable()) {
-                mapper = nullSafe(mapper, i + i, column.getSqlType());
+            Mapper mapper = mapper(i + 1, column.sqlType());
+            if (column.nullable()) {
+                mapper = nullSafe(mapper, i + i, column.sqlType());
             }
-            mappers.put(column.getName(), mapper);
+            mappers.put(column.name(), mapper);
         }
         return Map.copyOf(mappers);
     }
