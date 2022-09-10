@@ -75,49 +75,33 @@ public final class TableImporter {
         Map<String, Mapper> mappers = new HashMap<>();
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
-            mappers.put(column.getName(), mapper(column.getSqlType(), i + 1));
+            Mapper mapper = mapper(i + 1, column.getSqlType());
+            if (column.isNullable()) {
+                mapper = nullSafe(mapper, i + i, column.getSqlType());
+            }
+            mappers.put(column.getName(), mapper);
         }
         return Map.copyOf(mappers);
     }
 
-    private Mapper mapper(int sqlType, int index) {
+    private Mapper mapper(int index, int sqlType) {
         return switch (sqlType) {
-            case Types.DATE -> (stmt, value) -> {
-                if (value.isNull()) {
-                    stmt.setNull(index, sqlType);
-                } else {
-                    stmt.setDate(index, Date.valueOf(value.asDate()));
-                }
-            };
-            case Types.FLOAT -> (stmt, value) -> {
-                if (value.isNull()) {
-                    stmt.setNull(index, sqlType);
-                } else {
-                    stmt.setFloat(index, value.asNumeric().floatValue());
-                }
-            };
-            case Types.INTEGER -> (stmt, value) -> {
-                if (value.isNull()) {
-                    stmt.setNull(index, sqlType);
-                } else {
-                    stmt.setInt(index, value.asNumeric().intValue());
-                }
-            };
-            case Types.SMALLINT -> (stmt, value) -> {
-                if (value.isNull()) {
-                    stmt.setNull(index, sqlType);
-                } else {
-                    stmt.setShort(index, value.asNumeric().shortValue());
-                }
-            };
-            case Types.VARCHAR -> (stmt, value) -> {
-                if (value.isNull()) {
-                    stmt.setNull(index, sqlType);
-                } else {
-                    stmt.setString(index, value.asCharacter());
-                }
-            };
+            case Types.DATE -> (stmt, value) -> stmt.setDate(index, Date.valueOf(value.asDate()));
+            case Types.FLOAT -> (stmt, value) -> stmt.setFloat(index, value.asNumeric().floatValue());
+            case Types.INTEGER -> (stmt, value) -> stmt.setInt(index, value.asNumeric().intValue());
+            case Types.SMALLINT -> (stmt, value) -> stmt.setShort(index, value.asNumeric().shortValue());
+            case Types.VARCHAR -> (stmt, value) -> stmt.setString(index, value.asCharacter());
             default -> throw new IllegalStateException("Unexpected type: " + sqlType);
+        };
+    }
+
+    private Mapper nullSafe(Mapper mapper, int index, int sqlType) {
+        return (stmt, value) -> {
+            if (value.isNull()) {
+                stmt.setNull(index, sqlType);
+            } else {
+                mapper.set(stmt, value);
+            }
         };
     }
 
