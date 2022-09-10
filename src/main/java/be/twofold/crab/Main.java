@@ -20,10 +20,10 @@ public final class Main {
     private static void importFiles(List<Path> filePaths) throws SQLException, IOException {
         try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/crab?reWriteBatchedInserts=true", "crab", "crab")) {
             conn.setAutoCommit(false);
-            TableCreator creator = new TableCreator(conn);
+            TableCreator creator = new TableCreator(conn, false);
             TableImporter importer = new TableImporter(conn);
             for (Path filePath : filePaths) {
-                creator.createTable(filePath);
+                creator.createTable(filePath, tableName(filePath));
             }
             for (Path filePath : filePaths) {
                 importer.importFile(filePath);
@@ -37,6 +37,12 @@ public final class Main {
                 .filter(p -> p.toString().endsWith(".dbf"))
                 .collect(Collectors.toList());
         }
+    }
+
+    private static String tableName(Path path) {
+        String filename = path.getFileName().toString();
+        int index = filename.lastIndexOf('.');
+        return index == -1 ? filename : filename.substring(0, index);
     }
 
 }

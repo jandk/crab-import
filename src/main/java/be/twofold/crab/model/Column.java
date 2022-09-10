@@ -1,5 +1,6 @@
 package be.twofold.crab.model;
 
+import java.sql.*;
 import java.util.*;
 
 public final class Column implements Named {
@@ -41,6 +42,17 @@ public final class Column implements Named {
 
     public boolean isNullable() {
         return nullable;
+    }
+
+    public String getTypeString() {
+        return switch (sqlType) {
+            case Types.DATE -> "date";
+            case Types.FLOAT -> "real";
+            case Types.INTEGER -> "int";
+            case Types.SMALLINT -> "smallint";
+            case Types.VARCHAR -> "varchar(" + length + ")";
+            default -> throw new IllegalArgumentException("Unexpected type: " + sqlType);
+        };
     }
 
     @Override
